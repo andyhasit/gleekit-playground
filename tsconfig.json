@@ -1,0 +1,9 @@
+{
+  "compilerOptions": {
+    "jsx": "preserve",
+    "moduleResolution": "node",
+    "module": "commonjs",
+    "sourceMap": true
+  },
+  "include": ["apps/**/*"]
+}
