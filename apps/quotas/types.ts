@@ -13,7 +13,7 @@ export interface DayData {
   };
 }
 
-export type UserTargets = { [key: TargetId]: TargetData };
+export type UserTargets = { targets: TargetData[] };
 
 export interface TargetData {
   id: TargetId;

@@ -27,26 +27,6 @@ const config = {
           },
         ],
       },
-      // {
-      //   test: /\.css$/,
-      //   use: ["style-loader", "css-loader"],
-      // },
-      // {
-      //   test: /\.(css|scss)$/,
-      //   use: [
-      //     // MiniCssExtractPlugin.loader, // extracts CSS into file
-
-      //     // "css-loader", // resolves @import and url()
-      //     // "sass-loader", // compiles SCSS → CSS
-      //     "style-loader",
-      //     {
-      //       loader: "css-loader",
-      //       options: {
-      //         modules: true,
-      //       },
-      //     },
-      //   ],
-      // },
       {
         test: /\.module\.(css|scss)$/,
         use: [

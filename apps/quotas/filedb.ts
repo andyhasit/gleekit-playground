@@ -1,4 +1,4 @@
-import { getJsonDbx, putJsonDbx, gleekit } from "gleekit";
+import { getJsonDbx, getRawDbx, putJsonDbx, gleekit } from "gleekit";
 
 interface FileOptions<Shape> {
   path: string;
@@ -21,7 +21,7 @@ interface FileDbOptions {
 }
 
 /*
-For now this just goes straing to dropbox. Will add caching later.
+For now this just goes straight to dropbox. Will add caching later.
 
 */
 
@@ -61,8 +61,10 @@ class File<Shape> {
     this.default = opts.default;
   }
   async get(): Promise<Shape> {
-    const raw = await getJsonDbx(this.path);
-    return raw.ok ? this.parse(raw) : this.default();
+    // Need to carry raw response to point of usage.
+    const raw = await getRawDbx(this.path);
+    console.log(raw.ok);
+    return raw.ok ? raw.json() : this.default();
   }
   put(val: Shape) {
     return putJsonDbx(this.path, val);

@@ -10,7 +10,7 @@ export const dbx = {
   }),
   targets: db.file<UserTargets>({
     path: "targets.json",
-    default: () => ({}),
+    default: () => ({ targets: [] }),
   }),
   // month: db.fileSet<MonthInfo, MonthData>({
   //   path: (key) => `${key.year}/${key.month}.json`,

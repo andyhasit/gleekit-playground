@@ -1,6 +1,6 @@
 import { Uses, watch, RouteData, ComponentInstance } from "wallace";
-import { dbx } from "./data";
-import type { TargetId, iEntry } from "./types";
+import { dbx } from "../data";
+import type { TargetId, iEntry } from "../types";
 
 class Controller {
   date: Date;
