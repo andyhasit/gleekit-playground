@@ -13,3 +13,7 @@ const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 export const toWeekDay = (date: Date) => {
   return days[date.getDay()];
 };
+
+export const navTo = (path: string) => {
+  location.hash = path;
+};

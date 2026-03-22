@@ -1,6 +1,35 @@
 .target {
+  /* display: flex;
+  flex-direction: row;
+  align-items: center; */
+  border: 3px solid;
+  margin: 10px 5px;
+  border-radius: 10px;
+  padding: 5px 10px;
+}
+
+.targetDetails {
   display: flex;
   flex-direction: row;
-  align-items: center;
-  background-color: aqua;
+  :first-child {
+    width: 95%;
+    margin-right: 5px;
+  }
+}
+
+
+.scheduleInputs {
+  display: flex;
+  flex-direction: row;
+  * {
+    flex-grow: 1;
+    padding: 2px;
+  }
+  input {
+    margin-right: 2px;
+    width: 95%;
+  }
+  label {
+    display: block;
+  }
 }

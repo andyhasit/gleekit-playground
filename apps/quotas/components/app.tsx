@@ -1,22 +1,23 @@
 import { mount, Router, Uses, route } from "wallace";
 import { DayPage } from "./day";
 import { TargetsPage } from "./targets";
-import { ctrl } from "../controller";
-import { getLastNDays, toWeekDay } from "../utils";
+import { getLastNDays, toWeekDay, navTo } from "../utils";
 import styles from "../styles/app.module.css";
 
 const routerProps = {
   routes: [
     route("", DayPage),
-    route("/day/{day:date}", DayPage),
+    route("/day/{day:date}", DayPage, null, (component) =>
+      component.dismount()
+    ),
     route("/targets", TargetsPage),
   ],
 };
 
 const NavLink: Uses<{ href: string; text: string }> = ({ href, text }) => (
-  <a class={styles.navlink} href={href}>
+  <button class={styles.navlink} onClick={navTo(href)}>
     {text}
-  </a>
+  </button>
 );
 
 export const App = () => (
@@ -24,7 +25,7 @@ export const App = () => (
     <div css={styles.navButtons}>
       <NavLink.repeat props={links} />
     </div>
-    <Router props={routerProps} ctrl={ctrl} />
+    <Router props={routerProps} />
   </div>
 );
 

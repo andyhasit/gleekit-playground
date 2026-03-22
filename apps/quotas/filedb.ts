@@ -1,3 +1,4 @@
+// will be part of gleekit
 import { getJsonDbx, getRawDbx, putJsonDbx, gleekit } from "gleekit";
 
 interface FileOptions<Shape> {
@@ -50,11 +51,13 @@ class FileSet<Key, Shape> {
 }
 
 class File<Shape> {
+  db: FileDb;
   path: string;
   parse: (raw: string) => Shape;
   default: () => Shape;
   serialise: (raw: Shape) => string;
   constructor(db: FileDb, opts: FileOptions<Shape>) {
+    this.db = db;
     this.path = opts.path;
     this.parse = opts.parse || parseJson;
     this.serialise = opts.serialise || serialiseJson;
@@ -66,14 +69,41 @@ class File<Shape> {
     console.log(raw.ok);
     return raw.ok ? raw.json() : this.default();
   }
-  put(val: Shape) {
-    return putJsonDbx(this.path, val);
+  put(value: Shape) {
+    return this.db.put(this.path, value);
+  }
+}
+
+class Delayer {
+  delay: number;
+  queue: Record<string, any>;
+  timeout: any;
+  constructor() {
+    this.queue = {};
+    this.delay = 3000;
+  }
+  flush() {
+    // could something be added while it it doing this?
+    for (const path in this.queue) {
+      putJsonDbx(path, this.queue[path]);
+      delete this.queue[path];
+    }
+  }
+  push(path: string, value: any) {
+    this.queue[path] = value;
+    if (this.timeout) {
+      clearTimeout(this.timeout);
+    }
+    this.timeout = setTimeout(() => this.flush(), this.delay);
   }
 }
 
 class FileDb {
+  delayer: Delayer;
   // pass dbAdapter, apiAdapter, uiAdapter
-  constructor(options: FileDbOptions) {}
+  constructor(options: FileDbOptions) {
+    this.delayer = new Delayer();
+  }
   fileSet<Key, Shape>(opts: FileSetOptions<Key, Shape>) {
     return new FileSet(this, opts);
   }
@@ -87,7 +117,9 @@ class FileDb {
   /**
    * Puts a file to IndexedDb, and adds operation to batch.
    */
-  put() {}
+  put(path, value) {
+    this.delayer.push(path, value);
+  }
   /**
    * Deletes a file from IndexedDb, and adds operation to batch.
    */

@@ -19,6 +19,7 @@ export interface TargetData {
   id: TargetId;
   title: string;
   units: string;
+  color: string;
   scheduling: {
     increment: number;
     max: number;

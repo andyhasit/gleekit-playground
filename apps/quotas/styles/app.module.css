@@ -1,12 +1,14 @@
 
 .navlink {
-  background-color: rgb(126, 255, 255);
+  background-color: rgb(194, 216, 216);
   padding: 2px;
-  margin: 0 6px;
-  width: 42px;
+  margin: 0 3px;
+  min-width: 42px;
+  border-radius: 5px;
 }
 
 .navButtons {
+  margin-top: 10px;
   display: flex;
   justify-content: center;
 }
