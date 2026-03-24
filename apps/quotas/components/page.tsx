@@ -34,7 +34,6 @@ export class PageController<Props> {
     this.wrapper.update();
     this.load(routeData).then(() => {
       this.isLoading = false;
-      console.log("loaded");
       this.wrapper.update();
     });
   }

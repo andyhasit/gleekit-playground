@@ -27,26 +27,25 @@ For now this just goes straight to dropbox. Will add caching later.
 */
 
 class FileSet<Key, Shape> {
+  db: FileDb;
   path: (key: Key) => string;
   parse: (raw: string) => Shape;
   default: (key?: Key) => Shape;
   serialise: (raw: Shape) => string;
   constructor(db: FileDb, opts: FileSetOptions<Key, Shape>) {
+    this.db = db;
     this.path = opts.path;
     this.parse = opts.parse || parseJson;
     this.serialise = opts.serialise || serialiseJson;
     this.default = opts.default;
   }
   async get(key: Key): Promise<Shape> {
-    // should it also cache the deserialised copy if asked to?
-    // certain number, but then how do we limit?
-    // or pass a map which you manage
-    const raw = await getJsonDbx(this.path(key));
     // What happens on 409?
-    return raw.ok ? this.parse(raw) : this.default(key);
+    const raw = await getRawDbx(this.path(key));
+    return raw.ok ? raw.json() : this.default();
   }
-  put(key: Key, val: Shape) {
-    return putJsonDbx(this.path(key), val);
+  put(key: Key, value: Shape) {
+    return this.db.put(this.path(key), value);
   }
 }
 
@@ -66,7 +65,6 @@ class File<Shape> {
   async get(): Promise<Shape> {
     // Need to carry raw response to point of usage.
     const raw = await getRawDbx(this.path);
-    console.log(raw.ok);
     return raw.ok ? raw.json() : this.default();
   }
   put(value: Shape) {
