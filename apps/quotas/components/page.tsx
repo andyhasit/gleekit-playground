@@ -80,3 +80,33 @@ export function pageLoader<Props>(
   };
   return Wrapper;
 }
+
+// TODO: try with a stub and load method.
+
+export const PageWrapper: Uses<{
+  props: RouteData;
+  // rename methods to self?
+  methods: {
+    isLoading: boolean;
+    pageProps: any;
+    load: (props: RouteData) => Promise<any>;
+  };
+  stub: { page: ComponentFunction<any> };
+}> = (_, { ctrl, stub, self }) => (
+  <div class="pageLoader">
+    <div if={self.isLoading}>wait...</div>
+    <stub.page if={!self.isLoading} ref:page props={self.pageProps} />
+  </div>
+);
+
+PageWrapper.methods = {
+  render(props) {
+    this.isLoading = true;
+    this.update();
+    this.load(props).then((pageProps) => {
+      this.isLoading = false;
+      this.pageProps = pageProps;
+      this.update();
+    });
+  },
+};
