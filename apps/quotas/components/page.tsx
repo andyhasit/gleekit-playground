@@ -84,6 +84,7 @@ export function pageLoader<Props>(
 // TODO: try with a stub and load method.
 
 export const PageWrapper: Uses<{
+  __compound: true;
   props: RouteData;
   // rename methods to self?
   methods: {

@@ -1,11 +1,5 @@
-import {
-  Uses,
-  extendComponent,
-  protect,
-  watch,
-  RouteData,
-  ComponentInstance,
-} from "wallace";
+import { extendComponent, protect, watch } from "wallace";
+import type { Uses, RouteData, ComponentInstance } from "wallace";
 import { dbx } from "../data";
 import type {
   DayData,
@@ -18,94 +12,7 @@ import type {
 import { pageLoader, PageController, PageWrapper } from "./page";
 import styles from "../styles/targets.module.css";
 import { Watcher } from "./watcher";
-import { withGetters } from "./getters";
 
-// type WithCtrl<Props> = Uses<{ ctrl: Controller; props: Props }>;
-
-// interface EntryProps {
-//   target: TargetData;
-//   entry: TargetEntry;
-//   scheduling: TargetScheduling;
-//   quota: number;
-//   log: LogEntry[];
-//   total: number;
-//   showLog: boolean;
-//   component?: ComponentInstance<EntryProps>;
-// }
-
-// interface PageProps {
-//   entries: EntryProps[];
-// }
-
-const unWatch = (object: any) => JSON.parse(JSON.stringify(object));
-
-// const toEntry = (target: TargetData, entry: TargetEntry): EntryProps => {
-//   return withGetters(
-//     {
-//       target,
-//       entry,
-//       scheduling: target.scheduling,
-//       log: entry?.log || [],
-//       quota: entry?.quota || 0,
-//       showLog: false,
-//     },
-//     {
-//       total: (foo) =>
-//         (foo.entry?.log || []).reduce((acc, log) => acc + log.count, 0),
-//     }
-//   );
-// };
-
-// class Controller extends PageController<PageProps> {
-//   userTargets: UserTargets;
-//   date: Date;
-//   dayData: DayData;
-//   mode: "edit" | "view" = "view";
-//   watcher: Watcher<EntryProps>;
-//   async load(routeData: RouteData): Promise<void> {
-//     this.date = routeData.args.day || new Date();
-//     this.watcher = new Watcher(
-//       [["quota", "log"], (target) => this.targetChanged(target)],
-//       [["showLog"], (target) => target.component.update()],
-//       [["component"], () => null]
-//     );
-//     return Promise.all([
-//       dbx.targets.get().then((res) => (this.userTargets = res)),
-//       dbx.day.get(this.date).then((res) => (this.dayData = res)),
-//     ]).then(() => {
-//       this.mode =
-//         Object.keys(this.dayData.entries).length > 0 ? "view" : "edit";
-
-//       this.pageProps = { entries: [] };
-//       this.setProps();
-//     });
-//   }
-//   setProps() {
-//     let entries: EntryProps[] = this.userTargets.targets.map((target) =>
-//       toEntry(target, this.dayData.entries[target.id])
-//     );
-//     if (this.mode === "view") {
-//       entries = entries.filter((entry) => entry.entry);
-//     }
-//     this.pageProps.entries = this.watcher.map(entries);
-//   }
-//   setMode(mode: "edit" | "view") {
-//     this.mode = mode;
-//     this.setProps();
-//     this.page.update();
-//   }
-//   targetChanged(entry: EntryProps) {
-//     // Need to extract the dayEntry if new, but
-//     // Be careful not to pass the reactive objects back in.
-//     this.dayData.entries[entry.target.id] = {
-//       log: unWatch(entry.log),
-//       quota: entry.quota,
-//     };
-//     dbx.day.put(this.date, this.dayData);
-//     // this.setProps();
-//     this.page.update();
-//   }
-// }
 class AltController {
   userTargets: UserTargets;
   date: Date;
@@ -118,11 +25,6 @@ class AltController {
     this.date = routeData.args.day || new Date();
   }
   async load(): Promise<void> {
-    // this.watcher = new Watcher(
-    //   [["quota", "log"], (target) => this.targetChanged(target)],
-    //   [["showLog"], (target) => target.component.update()],
-    //   [["component"], () => null]
-    // );
     return Promise.all([
       dbx.targets.get().then((res) => (this.userTargets = res)),
       dbx.day.get(this.date).then((res) => (this.dayData = res)),
@@ -189,7 +91,7 @@ const Entry: Uses<EntryCtrl> = ({
 }) => (
   <div assign={component} css={styles.target} style:borderColor={target.color}>
     <div style="font-size: 14px;">{target.title}</div>
-    <div if={mode === "view"}>
+    <div help if={mode === "view"}>
       <progress
         max={target.scheduling.max}
         style:accentColor={target.color}
@@ -258,7 +160,7 @@ const DayPageInner: Uses<AltController> = ({
   </div>
 );
 
-export const DayPage = extendComponent(PageWrapper);
+const DayPage = extendComponent(PageWrapper);
 DayPage.methods = {
   load(routeData: RouteData) {
     const ctrl = new AltController(routeData);
@@ -267,3 +169,5 @@ DayPage.methods = {
 };
 
 DayPage.stub.page = DayPageInner;
+
+export { DayPage };
