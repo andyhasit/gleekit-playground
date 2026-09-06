@@ -4,7 +4,7 @@ import type { TargetData } from "../types";
 import { pageLoader, PageController } from "./page";
 import styles from "../styles/targets.module.css";
 
-type WithCtrl<Props> = Uses<{ ctrl: Controller; props: Props }>;
+type WithCtrl<Model> = Uses<{ hub: Controller; model: Model }>;
 interface PageProps {
   targets: TargetData[];
 }
@@ -44,22 +44,22 @@ class Controller extends PageController<PageProps> {
 }
 
 // cancel draft button
-const TargetPageInner: Uses<PageProps> = ({ targets }, { ctrl }) => (
+const TargetPageInner: Uses<PageProps> = ({ targets }, { hub }) => (
   <div>
-    <Target.repeat props={targets} />
-    <button if={!ctrl.draftTarget} onClick={ctrl.newDraftTarget()}>
+    <Target.repeat models={targets} />
+    <button if={!hub.draftTarget} onClick={hub.newDraftTarget()}>
       add
     </button>
-    <div if={ctrl.draftTarget}>
-      <Target props={ctrl.draftTarget} />
-      <button onClick={ctrl.saveDraftTarget()}>Save</button>
+    <div if={hub.draftTarget}>
+      <Target model={hub.draftTarget} />
+      <button onClick={hub.saveDraftTarget()}>Save</button>
     </div>
   </div>
 );
 
 // add delete button, allow moving
 
-const Target: WithCtrl<TargetData> = (target, { ctrl }) => (
+const Target: WithCtrl<TargetData> = (target, { hub }) => (
   <div css={styles.target} style:borderColor={target.color}>
     <form>
       <div css={styles.targetDetails}>
@@ -73,11 +73,11 @@ const Target: WithCtrl<TargetData> = (target, { ctrl }) => (
         </div>
         <div>
           <label>increment</label>
-          <input bindNumber={target.scheduling.increment} />
+          <input bind:valueAsNumber={target.scheduling.increment} />
         </div>
         <div>
           <label>max</label>
-          <input bindNumber={target.scheduling.max} />
+          <input bind:valueAsNumber={target.scheduling.max} />
         </div>
       </div>
     </form>

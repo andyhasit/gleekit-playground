@@ -13,7 +13,7 @@ import styles from "../styles/targets.module.css";
 import { Watcher } from "./watcher";
 import { withGetters } from "./getters";
 
-type WithCtrl<Props> = Uses<{ ctrl: Controller; props: Props }>;
+type WithCtrl<Model> = Uses<{ hub: Controller; model: Model }>;
 
 interface EntryProps {
   target: TargetData;
@@ -100,29 +100,29 @@ class Controller extends PageController<PageProps> {
   }
 }
 
-const DayPageInner: WithCtrl<PageProps> = ({ entries }, { ctrl }) => (
+const DayPageInner: WithCtrl<PageProps> = ({ entries }, { hub }) => (
   <div>
-    <button if={ctrl.mode === "edit"} onClick={ctrl.setMode("view")}>
+    <button if={hub.mode === "edit"} onClick={hub.setMode("view")}>
       View
     </button>
-    <button if={ctrl.mode === "view"} onClick={ctrl.setMode("edit")}>
+    <button if={hub.mode === "view"} onClick={hub.setMode("edit")}>
       Edit
     </button>
-    <Entry.repeat props={entries} />
-    <div if={ctrl.mode === "view" && !entries.length}>
+    <Entry.repeat model={entries} />
+    <div if={hub.mode === "view" && !entries.length}>
       No targets for today. Use edit mode.
     </div>
   </div>
 );
 
-const Entry: WithCtrl<EntryProps> = (entry, { ctrl }) => (
+const Entry: WithCtrl<EntryProps> = (entry, { hub }) => (
   <div
     assign={entry.component}
     css={styles.target}
     style:borderColor={entry.target.color}
   >
     <div style="font-size: 14px;">{entry.target.title}</div>
-    <div if={ctrl.mode === "view"}>
+    <div if={hub.mode === "view"}>
       <progress
         max={entry.scheduling.max}
         style:accentColor={entry.target.color}
@@ -131,10 +131,10 @@ const Entry: WithCtrl<EntryProps> = (entry, { ctrl }) => (
       ></progress>
       {entry.total}
     </div>
-    <div if={ctrl.mode === "edit"}>
+    <div if={hub.mode === "edit"}>
       <form>
         <input
-          disabled={ctrl.mode === "view"}
+          disabled={hub.mode === "view"}
           type="range"
           min="0"
           style="width: 100%"
@@ -148,7 +148,7 @@ const Entry: WithCtrl<EntryProps> = (entry, { ctrl }) => (
     </div>
 
     <button
-      if={ctrl.mode === "view"}
+      if={hub.mode === "view"}
       onClick={entry.log.push({
         time: 2,
         count: entry.target.scheduling.increment,
@@ -159,12 +159,12 @@ const Entry: WithCtrl<EntryProps> = (entry, { ctrl }) => (
     <button onClick={(entry.showLog = !entry.showLog)}>...</button>
     <div if={entry.showLog}>
       <div>Log</div>
-      <Log.repeat props={entry.log} />
+      <Log.repeat model={entry.log} />
     </div>
   </div>
 );
 
-const Log: WithCtrl<LogEntry> = (log, { ctrl }) => (
+const Log: WithCtrl<LogEntry> = (log, { hub }) => (
   <div>
     <div>{log.time}</div>
     <div>{log.count}</div>

@@ -1,24 +1,15 @@
 import { extendComponent, protect, watch } from "wallace";
 import type { Uses, RouteData, ComponentInstance } from "wallace";
 import { dbx } from "../data";
-import type {
-  DayData,
-  LogEntry,
-  TargetEntry,
-  TargetData,
-  TargetScheduling,
-  UserTargets,
-} from "../types";
-import { pageLoader, PageController, PageWrapper } from "./page";
+import type { DayData, ActivitySettings } from "../types";
+import { PageWrapper } from "./page";
 import styles from "../styles/targets.module.css";
-import { Watcher } from "./watcher";
 
-class AltController {
-  userTargets: UserTargets;
+class Controller {
+  settings: ActivitySettings;
   date: Date;
   dayData: DayData;
   mode: "edit" | "view" = "view";
-  watcher: Watcher<EntryCtrl>;
   entries: EntryCtrl[];
   component: ComponentInstance;
   constructor(routeData: RouteData) {
@@ -26,7 +17,7 @@ class AltController {
   }
   async load(): Promise<void> {
     return Promise.all([
-      dbx.targets.get().then((res) => (this.userTargets = res)),
+      dbx.settings.get().then((res) => (this.settings = res)),
       dbx.day.get(this.date).then((res) => (this.dayData = res)),
     ]).then(() => {
       this.mode =
@@ -35,11 +26,11 @@ class AltController {
     });
   }
   setEntries() {
-    let entries: EntryCtrl[] = this.userTargets.targets.map(
-      (target) =>
+    let entries: EntryCtrl[] = this.settings.activities.map(
+      (activity) =>
         new EntryCtrl(
-          target,
-          this.dayData.entries[target.id] || { quota: 0, log: [] },
+          activity,
+          this.dayData.entries[activity.id] || { quota: 0, log: [] },
           this
         )
     );
@@ -66,10 +57,10 @@ class EntryCtrl {
   target: TargetData;
   entry: TargetEntry;
   component?: ComponentInstance;
-  hub: AltController;
+  hub: Controller;
   mode: "view" | "edit";
   state: { showLog: boolean };
-  constructor(target: TargetData, entry: TargetEntry, hub: AltController) {
+  constructor(target: TargetData, entry: TargetEntry, hub: Controller) {
     this.target = target;
     this.hub = hub;
     this.mode = hub.mode;
@@ -81,7 +72,7 @@ class EntryCtrl {
   }
 }
 
-const Entry: Uses<{ model: EntryCtrl }> = ({
+const Entry: Uses<EntryCtrl> = ({
   component,
   entry,
   target,
@@ -89,12 +80,7 @@ const Entry: Uses<{ model: EntryCtrl }> = ({
   mode,
   total,
 }) => (
-  <div
-    watch
-    assign={component}
-    css={styles.target}
-    style:borderColor={target.color}
-  >
+  <div assign={component} css={styles.target} style:borderColor={target.color}>
     <div style="font-size: 14px;">{target.title}</div>
     <div help if={mode === "view"}>
       <progress
@@ -131,44 +117,34 @@ const Entry: Uses<{ model: EntryCtrl }> = ({
       ++
     </button>
     <button onClick={(state.showLog = !state.showLog)}>...</button>
-    <div if={state.showLog}>
-      <div>Log</div>
-      <Log.repeat models={entry.log} />
-    </div>
   </div>
 );
 
-const Log: Uses<LogEntry> = (log) => (
-  <div>
-    <div>{log.time}</div>
-    <div>{log.count}</div>
-  </div>
-);
-
-const DayPageInner: Uses<AltController> = ({
+const DayPageInner: Uses<Controller> = ({
   component,
   entries,
   mode,
   setMode,
 }) => (
   <div assign={component}>
-    <button if={mode === "edit"} onClick={setMode("view")}>
+    Day
+    {/* <button if={mode === "edit"} onClick={setMode("view")}>
       View
     </button>
     <button if={mode === "view"} onClick={setMode("edit")}>
       Edit
     </button>
-    <Entry.repeat models={entries} />
+    <Entry.repeat model={entries} />
     <div if={mode === "view" && !entries.length}>
       No targets for today. Use edit mode.
-    </div>
+    </div> */}
   </div>
 );
 
 const DayPage = extendComponent(PageWrapper);
 DayPage.methods = {
   load(routeData: RouteData) {
-    const hub = new AltController(routeData);
+    const hub = new Controller(routeData);
     return hub.load().then(() => hub);
   },
 };

@@ -4,7 +4,7 @@ import type { DayData, TargetEntry, TargetData, UserTargets } from "../types";
 import { pageLoader, PageController } from "./page";
 import styles from "../styles/targets.module.css";
 
-type WithCtrl<Props> = Uses<{ ctrl: Controller; props: Props }>;
+type WithCtrl<Model> = Uses<{ hub: Controller; model: Model }>;
 
 interface EntryProps {
   target: TargetData;
@@ -58,19 +58,19 @@ class Controller extends PageController<PageProps> {
   }
 }
 
-const DayPageInner: Uses<PageProps> = ({ entries }, { ctrl }) => (
+const DayPageInner: Uses<PageProps> = ({ entries }, { hub }) => (
   <div>
-    <button if={ctrl.mode === "edit"} onClick={ctrl.setMode("view")}>
+    <button if={hub.mode === "edit"} onClick={hub.setMode("view")}>
       View
     </button>
-    <button if={ctrl.mode === "view"} onClick={ctrl.setMode("edit")}>
+    <button if={hub.mode === "view"} onClick={hub.setMode("edit")}>
       Edit
     </button>
-    <Entry.repeat props={entries} />
+    <Entry.repeat model={entries} />
   </div>
 );
 
-const Entry: WithCtrl<EntryProps> = (entry, { ctrl }) => (
+const Entry: WithCtrl<EntryProps> = (entry, { hub }) => (
   <div css={styles.target} style:borderColor={entry.target.color}>
     <form>
       <div css={styles.targetDetails}>
@@ -84,11 +84,11 @@ const Entry: WithCtrl<EntryProps> = (entry, { ctrl }) => (
         </div>
         <div>
           <label>increment</label>
-          <input bindNumber={entry.scheduling.increment} />
+          <input bind:valueAsNumber={entry.scheduling.increment} />
         </div>
         <div>
           <label>max</label>
-          <input bindNumber={entry.scheduling.max} />
+          <input bind:valueAsNumber={entry.scheduling.max} />
         </div>
       </div> */}
     </form>

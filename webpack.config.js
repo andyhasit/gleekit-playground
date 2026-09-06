@@ -100,6 +100,7 @@ const loadApps = (config) => {
       });
     }
   });
+  console.log(entries);
   config.entry = Object.fromEntries(entries.map((e) => [e.name, e.import]));
 };
 

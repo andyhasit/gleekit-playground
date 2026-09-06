@@ -28,28 +28,28 @@ const Entry: Uses<iEntry> = () => <div>Entry</div>;
 
 const EntryTable: Uses<Date> = () => (
   <div>
-    <Entry.repeat props={[]} />
+    <Entry.repeat model={[]} />
   </div>
 );
 
-export const DayPage: Uses<RouteData> = ({ args }, { ctrl }) => (
+export const DayPage: Uses<RouteData> = ({ args }, { hub }) => (
   <div>
     Entries here
-    <EntryTable props={args.date} />
-    <button onClick={ctrl.go()}>Go</button>
+    <EntryTable model={args.date} />
+    <button onClick={hub.go()}>Go</button>
   </div>
 );
 
 DayPage.methods = {
-  render(props) {
-    this.ctrl = new Controller(this, props.args.date || new Date());
-    this.ctrl.init();
+  render(model) {
+    this.hub = new Controller(this, model.args.date || new Date());
+    this.hub.init();
   },
 };
 
 /*
 
-const Target: WithCtrl<TargetData> = (target, { ctrl }) => (
+const Target: WithCtrl<TargetData> = (target, { hub }) => (
   <div css={styles.target} style:borderColor={target.color}>
     <form>
 

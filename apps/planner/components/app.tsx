@@ -1,6 +1,6 @@
 import { Router, Uses, route } from "wallace";
 import { DayPage } from "./day";
-import { TargetsPage } from "./targets";
+import { ActivitiesPage } from "./activity";
 import { getLastNDays, toWeekDay, navTo } from "../utils";
 import styles from "../styles/app.module.css";
 
@@ -10,7 +10,7 @@ const routerProps = {
     route("/day/{day:date}", DayPage, null, (component) =>
       component.dismount()
     ),
-    route("/targets", TargetsPage),
+    route("/activities", ActivitiesPage),
   ],
 };
 
@@ -29,7 +29,7 @@ export const App = () => (
   </div>
 );
 
-const links = [{ href: "#/targets", text: "Targets" }];
+const links = [{ href: "#/activities", text: "Activities" }];
 
 getLastNDays(5).forEach((date) => {
   links.unshift({
