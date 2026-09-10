@@ -19,7 +19,7 @@ const TaskList: Uses<iTask[]> = (tasks) => (
   <div>
     <h3>Tasks with update</h3>
     <div>Duration: {duration}</div>
-    <Task.repeat model={tasks} />
+    <Task.repeat models={tasks} />
   </div>
 );
 

@@ -1,6 +1,6 @@
-import { getDb } from "./filedb";
+import { getDb } from "../../lib/filedb";
 import type { DayData, ActivitySettings } from "./types";
-import { toISODate } from "./utils";
+import { toISODate } from "../../lib/utils";
 
 const db = getDb({ dbName: "foo" });
 export const dbx = {

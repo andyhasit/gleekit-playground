@@ -5,5 +5,5 @@
     "module": "commonjs",
     "sourceMap": true
   },
-  "include": ["apps/**/*"]
+  "include": ["apps/**/*", "lib/utils.ts", "lib/filedb.ts"]
 }

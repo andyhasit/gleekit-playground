@@ -3,16 +3,11 @@ const fs = require("fs");
 const CopyWebpackPlugin = require("copy-webpack-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const RemoveEmptyScriptsPlugin = require("webpack-remove-empty-scripts");
-const { getDevServer } = require("gleekit/webpack");
+const { getDevServer, GleekitWebpackHelper } = require("gleekit/webpack");
 
-const COPY_PATTERNS = [];
-
+const helper = new GleekitWebpackHelper({ sourceDir: "apps" });
 const config = {
-  entry: {},
-  devServer: getDevServer(__dirname),
-  output: {
-    path: path.resolve(__dirname, "dist/"),
-  },
+  ...helper.getAll(),
   infrastructureLogging: {
     level: "verbose",
   },
@@ -66,42 +61,8 @@ const config = {
     new MiniCssExtractPlugin({
       filename: ({ chunk }) => `${chunk.name}.css`,
     }),
+    ...helper.getPlugins(),
   ],
-};
-
-const addCopyPattern = (src, dest) => {
-  COPY_PATTERNS.push({
-    from: src,
-    to: dest,
-  });
-};
-
-/*
-This collects all manifest files from apps dir and loads them as webpack
-entries.
-TODO: should we load from settings instead?
-*/
-const loadApps = (config) => {
-  const entries = [];
-  fs.readdirSync("./apps").forEach((app) => {
-    if (app.startsWith("_")) return;
-    const manifestPath = `./apps/${app}/manifest.json`;
-    if (fs.existsSync(manifestPath)) {
-      addCopyPattern(manifestPath, `${app}/manifest.json`);
-      const manifest = JSON.parse(fs.readFileSync(manifestPath, "utf-8"));
-      console.log(`Loaded ${app} from ${manifestPath}`);
-      manifest.entries.forEach(([src, out]) => {
-        // Needed as we're loading CSS as entries.
-        const entryName = `${app}/${out.replace(/\.(css|js)$/, "")}`;
-        entries.push({
-          import: `./apps/${app}/${src}`,
-          name: entryName,
-        });
-      });
-    }
-  });
-  console.log(entries);
-  config.entry = Object.fromEntries(entries.map((e) => [e.name, e.import]));
 };
 
 const configureForEnv = (config) => {
@@ -117,14 +78,7 @@ const configureForEnv = (config) => {
 };
 
 module.exports = function () {
-  loadApps(config);
   configureForEnv(config);
-  if (COPY_PATTERNS.length > 0) {
-    config.plugins.push(
-      new CopyWebpackPlugin({
-        patterns: COPY_PATTERNS,
-      })
-    );
-  }
+  console.log(config);
   return config;
 };

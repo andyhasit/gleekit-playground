@@ -73,11 +73,11 @@ const Target: WithCtrl<TargetData> = (target, { hub }) => (
         </div>
         <div>
           <label>increment</label>
-          <input bind:valueAsNumber={target.scheduling.increment} />
+          <input bind-as:number={target.scheduling.increment} />
         </div>
         <div>
           <label>max</label>
-          <input bind:valueAsNumber={target.scheduling.max} />
+          <input bind-as:number={target.scheduling.max} />
         </div>
       </div>
     </form>

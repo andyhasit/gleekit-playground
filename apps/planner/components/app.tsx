@@ -1,7 +1,7 @@
 import { Router, Uses, route } from "wallace";
 import { DayPage } from "./day";
 import { ActivitiesPage } from "./activity";
-import { getLastNDays, toWeekDay, navTo } from "../utils";
+import { getLastNDays, toWeekDay, navTo } from "../../../lib/utils";
 import styles from "../styles/app.module.css";
 
 const routerProps = {

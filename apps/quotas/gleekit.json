@@ -1,0 +1,4 @@
+{
+  "name": "quotas",
+  "body": [{ "type": "script", "path": "index.js", "src": "index.tsx" }]
+}
