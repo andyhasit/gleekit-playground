@@ -1,4 +1,26 @@
-// will be part of gleekit
+/* 
+
+A library for working with files in dropbox.
+Will be part of gleekit.
+
+Use like so:
+
+const db = getDb({ dbName: "foo" });
+
+export const dbx = {
+  day: db.fileSet<Date, DayData>({
+    path: (key) => `${toISODate(key)}.json`,
+    default: () => ({ entries: {} }),
+  }),
+  targets: db.file<UserTargets>({
+    path: "targets.json",
+    default: () => ({ targets: [] }),
+  })
+}
+
+
+
+*/
 import { getJsonDbx, getRawDbx, putJsonDbx, gleekit } from "gleekit";
 
 interface FileOptions<Shape> {

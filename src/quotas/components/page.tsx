@@ -1,5 +1,5 @@
 /*
-Exports a controller base class and component definition factory function which
+Exports a controller (now hub) base class and component definition factory function which
 work together to abstract a page that displays a progress bar while the page fetches
 the data it needs.
 
