@@ -1,21 +1,21 @@
-import { Uses, watch, RouteData } from "wallace";
+import { Uses, Takes, watch, RouteData } from "wallace";
 import { dbx } from "../data";
 import type { DayData, TargetEntry, TargetData, UserTargets } from "../types";
-import { pageLoader, PageController } from "./page";
+import { wrapPage, WrappedPageHub } from "../../../lib/page-wrapper";
 import styles from "../styles/targets.module.css";
 
-type WithCtrl<Model> = Uses<{ hub: Controller; model: Model }>;
+type WithHub<Model> = Uses<{ hub: DayPageHub; model: Model }>;
 
-interface EntryProps {
+interface EntryModel {
   target: TargetData;
   entry: TargetEntry;
 }
 
-interface PageProps {
-  entries: EntryProps[];
+interface PageModel {
+  entries: EntryModel[];
 }
 
-class Controller extends PageController<PageProps> {
+class DayPageHub extends WrappedPageHub<PageModel> {
   userTargets: UserTargets;
   date: Date;
   dayData: DayData;
@@ -27,25 +27,25 @@ class Controller extends PageController<PageProps> {
       dbx.day.get(this.date).then((res) => (this.dayData = res)),
     ]).then(() => {
       this.mode = this.dayData.entries ? "view" : "edit";
-      this.setProps();
+      this.setModel();
     });
   }
-  setProps() {
-    let entries: EntryProps[] = this.userTargets.targets.map((target) => ({
+  setModel() {
+    let entries: EntryModel[] = this.userTargets.targets.map((target) => ({
       target,
       entry: this.dayData.entries[target.id],
     }));
     if (this.mode === "view") {
       entries = entries.filter((entry) => entry.entry);
     }
-    this.pageProps = {
+    this.model = {
       entries: watch(entries, () => {
         console.log("changes");
         //   this.page.update();
         //   dbx.targets.put({ targets: this.targets });
       }),
     };
-    // this.pageProps.entries = watch(entries, () => {
+    // this.pageModel.entries = watch(entries, () => {
     //   console.log("changes");
     //   //   this.page.update();
     //   //   dbx.targets.put({ targets: this.targets });
@@ -53,12 +53,12 @@ class Controller extends PageController<PageProps> {
   }
   setMode(mode: "edit" | "view") {
     this.mode = mode;
-    this.setProps();
+    this.setModel();
     this.page.update();
   }
 }
 
-const DayPageInner: Uses<PageProps> = ({ entries }, { hub }) => (
+const DayPageInner: WithHub<PageModel> = ({ entries }, { hub }) => (
   <div>
     <button if={hub.mode === "edit"} onClick={hub.setMode("view")}>
       View
@@ -66,11 +66,11 @@ const DayPageInner: Uses<PageProps> = ({ entries }, { hub }) => (
     <button if={hub.mode === "view"} onClick={hub.setMode("edit")}>
       Edit
     </button>
-    <Entry.repeat model={entries} />
+    <Entry.repeat models={entries} />
   </div>
 );
 
-const Entry: WithCtrl<EntryProps> = (entry, { hub }) => (
+const Entry: WithHub<EntryModel> = (entry, { hub }) => (
   <div css={styles.target} style:borderColor={entry.target.color}>
     <form>
       <div css={styles.targetDetails}>
@@ -95,4 +95,4 @@ const Entry: WithCtrl<EntryProps> = (entry, { hub }) => (
   </div>
 );
 
-export const DayPage = pageLoader<PageProps>(DayPageInner, Controller);
+export const DayPage = wrapPage<PageModel>(DayPageInner, DayPageHub);

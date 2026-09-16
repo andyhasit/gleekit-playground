@@ -1,34 +1,25 @@
-/*
-Exports a controller (now hub) base class and component definition factory function which
-work together to abstract a page that displays a progress bar while the page fetches
-the data it needs.
-
-
-*/
 import { ComponentInstance, ComponentFunction, Uses, RouteData } from "wallace";
 
-export function renderInitPage(CtrlClass) {
-  return function (model, parentCtrl) {
-    new CtrlClass(this, model, parentCtrl).init();
-  };
-}
-
 /**
- * Base class for Page Controllers.
+ * Base class for a Hub that controls a page. Use with `wrapPage` helper.
+ * You must implement the `load` method which should set the `model` which is
+ * passed to the page component.
  */
-export class PageController<Model> {
+export class WrappedPageHub<Model> {
   isLoading: boolean = true;
   wrapper: ComponentInstance<RouteData>;
   page: ComponentInstance<Model>;
-  pageProps: Model;
+  model: Model;
+  parentHub: any;
   constructor(
     wrapper: ComponentInstance<RouteData>,
     page: ComponentInstance<Model>,
-    parentCtrl: any
+    parentHub: any
   ) {
     this.wrapper = wrapper;
     this.page = page;
     this.wrapper.hub = this.page.hub = this;
+    this.parentHub = parentHub;
   }
   init(routeData: RouteData) {
     this.wrapper.update();
@@ -43,45 +34,41 @@ export class PageController<Model> {
 }
 
 /**
- * Returns a component definition which nests the PageComponent alongside
- * a progress bar, starting with only the progress bar visible.
- * When the controller's load function resolves, the visibility is switched
- * to show the PageComponent.
- *
- * The PageComponent receives the controller, which may also set the page's model
- * before resolving.
+ * Wraps a page component inside a wrapper component which displays a progress
+ * bar while the page is loading.
+ * Must pass a Hub derived from WrappedPageHub.
  *
  * @param PageComponent
- * @param Controller
- * @returns
+ * @param Hub
+ * @returns a Wrapper component
  */
-export function pageLoader<Model>(
+export function wrapPage<Model>(
   PageComponent: ComponentFunction<Model>,
-  Controller: typeof PageController<Model>
+  Hub: typeof WrappedPageHub<Model>
 ) {
-  const Wrapper: Uses<RouteData> = (_, { hub }) => (
+  const Wrapper: Uses<{ model: RouteData; hub: WrappedPageHub<Model> }> = (
+    _,
+    { hub }
+  ) => (
     <div class="pageLoader">
       <div if={hub.isLoading}>wait...</div>
-      <PageComponent
-        if={!hub.isLoading}
-        ref:page
-        hub={hub}
-        model={hub.pageProps}
-      />
+      <PageComponent if={!hub.isLoading} ref:page hub={hub} model={hub.model} />
     </div>
   );
   Wrapper.methods = {
-    render(model, parentCtrl) {
+    // Does parentHub work?
+    render(routeData, parentHub) {
+      // When we use `ref` on nested components we get a nester. Not ideal...
       //@ts-ignore
       const page = this.ref.page.get();
-      this.hub = new Controller(this, page, parentCtrl);
-      this.hub.init(model);
+      this.hub = new Hub(this, page, parentHub);
+      this.hub.init(routeData);
     },
   };
   return Wrapper;
 }
 
-// TODO: try with a stub and load method.
+// TODO: remove this:
 
 export const PageWrapper: Uses<{
   __compound: true;
@@ -89,14 +76,14 @@ export const PageWrapper: Uses<{
   // rename methods to self?
   methods: {
     isLoading: boolean;
-    pageProps: any;
+    pageModel: any;
     load: (model: RouteData) => Promise<any>;
   };
   stub: { page: ComponentFunction<any> };
 }> = (_, { hub, stub, self }) => (
   <div class="pageLoader">
     <div if={self.isLoading}>wait...</div>
-    <stub.page if={!self.isLoading} ref:page model={self.pageProps} />
+    <stub.page if={!self.isLoading} ref:page model={self.pageModel} />
   </div>
 );
 
@@ -104,9 +91,9 @@ PageWrapper.methods = {
   render(model) {
     this.isLoading = true;
     this.update();
-    this.load(model).then((pageProps) => {
+    this.load(model).then((pageModel) => {
       this.isLoading = false;
-      this.pageProps = pageProps;
+      this.pageModel = pageModel;
       this.update();
     });
   },

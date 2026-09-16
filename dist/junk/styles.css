@@ -1,0 +1,1 @@
+/*! tailwindcss v4.3.3 | MIT License | https://tailwindcss.com */@layer theme{:root,:host{--spacing:.25rem}}@layer utilities{.ml-2{margin-left:calc(var(--spacing)*2)}}@layer app

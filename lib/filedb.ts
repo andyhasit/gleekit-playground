@@ -1,11 +1,19 @@
 /* 
 
-A library for working with files in dropbox.
-Will be part of gleekit.
+A library for working with files in dropbox. Will be part of gleekit.
+For now this just goes straight to dropbox. Will add caching later.
 
 Use like so:
 
-const db = getDb({ dbName: "foo" });
+const db = getDb({});
+
+export const db = adapter.file<Data>({
+  path: "junk/main.json",
+  default: () => ({ locations: [] }),
+});
+
+
+Or for multiple files:
 
 export const dbx = {
   day: db.fileSet<Date, DayData>({
@@ -17,7 +25,6 @@ export const dbx = {
     default: () => ({ targets: [] }),
   })
 }
-
 
 
 */
@@ -40,14 +47,8 @@ const parseJson = (raw) => JSON.parse(raw);
 const serialiseJson = (raw) => JSON.stringify(raw);
 
 interface FileDbOptions {
-  dbName: string;
+  dbName?: string;
 }
-
-/*
-For now this just goes straight to dropbox. Will add caching later.
-
-*/
-
 class FileSet<Key, Shape> {
   db: FileDb;
   path: (key: Key) => string;

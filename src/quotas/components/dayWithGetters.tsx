@@ -8,7 +8,7 @@ import type {
   TargetScheduling,
   UserTargets,
 } from "../types";
-import { pageLoader, PageController } from "./page";
+import { wrapPage, WrappedPageHub } from "../../../lib/page-wrapper";
 import styles from "../styles/targets.module.css";
 import { Watcher } from "./watcher";
 import { withGetters } from "./getters";
@@ -26,7 +26,7 @@ interface EntryProps {
   component?: ComponentInstance<EntryProps>;
 }
 
-interface PageProps {
+interface model {
   entries: EntryProps[];
 }
 
@@ -49,7 +49,7 @@ const toEntry = (target: TargetData, entry: TargetEntry): EntryProps => {
   );
 };
 
-class Controller extends PageController<PageProps> {
+class Controller extends WrappedPageHub<model> {
   userTargets: UserTargets;
   date: Date;
   dayData: DayData;
@@ -69,7 +69,7 @@ class Controller extends PageController<PageProps> {
       this.mode =
         Object.keys(this.dayData.entries).length > 0 ? "view" : "edit";
 
-      this.pageProps = { entries: [] };
+      this.model = { entries: [] };
       this.setProps();
     });
   }
@@ -80,7 +80,7 @@ class Controller extends PageController<PageProps> {
     if (this.mode === "view") {
       entries = entries.filter((entry) => entry.entry);
     }
-    this.pageProps.entries = this.watcher.map(entries);
+    this.model.entries = this.watcher.map(entries);
   }
   setMode(mode: "edit" | "view") {
     this.mode = mode;
@@ -100,7 +100,7 @@ class Controller extends PageController<PageProps> {
   }
 }
 
-const DayPageInner: WithCtrl<PageProps> = ({ entries }, { hub }) => (
+const DayPageInner: WithCtrl<model> = ({ entries }, { hub }) => (
   <div>
     <button if={hub.mode === "edit"} onClick={hub.setMode("view")}>
       View
@@ -170,7 +170,7 @@ const Log: WithCtrl<LogEntry> = (log, { hub }) => (
     <div>{log.count}</div>
   </div>
 );
-export const DayPage = pageLoader<PageProps>(DayPageInner, Controller);
+export const DayPage = wrapPage<model>(DayPageInner, Controller);
 
 /*
 

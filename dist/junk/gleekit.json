@@ -1,0 +1,5 @@
+{
+  "name": "Junk",
+  "head": [{ "type": "link", "path": "styles.css", "dev": "styles.css" }],
+  "body": [{ "type": "script", "path": "index.js", "dev": "index.tsx" }]
+}

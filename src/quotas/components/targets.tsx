@@ -1,7 +1,7 @@
 import { Uses, watch, RouteData } from "wallace";
 import { dbx } from "../data";
 import type { TargetData } from "../types";
-import { pageLoader, PageController } from "./page";
+import { wrapPage, WrappedPageHub } from "../../../lib/page-wrapper";
 import styles from "../styles/targets.module.css";
 
 type WithCtrl<Model> = Uses<{ hub: Controller; model: Model }>;
@@ -9,7 +9,7 @@ interface PageProps {
   targets: TargetData[];
 }
 
-class Controller extends PageController<PageProps> {
+class Controller extends WrappedPageHub<PageProps> {
   targets: TargetData[];
   draftTarget: TargetData;
   async load(routeData: RouteData): Promise<void> {
@@ -84,4 +84,4 @@ const Target: WithCtrl<TargetData> = (target, { hub }) => (
   </div>
 );
 
-export const TargetsPage = pageLoader<PageProps>(TargetPageInner, Controller);
+export const TargetsPage = wrapPage<PageProps>(TargetPageInner, Controller);

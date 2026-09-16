@@ -1,4 +1,11 @@
 {
   "name": "Junk",
+  "head": [
+    { "type": "link", "path": "styles.css", "dev": "styles.css" },
+    {
+      "type": "link",
+      "path": "https://maxst.icons8.com/vue-static/landings/line-awesome/line-awesome/1.3.0/css/line-awesome.min.css"
+    }
+  ],
   "body": [{ "type": "script", "path": "index.js", "dev": "index.tsx" }]
 }

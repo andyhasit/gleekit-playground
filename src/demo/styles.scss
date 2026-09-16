@@ -1,7 +1,9 @@
-// @use "variables";
-
 $H1Color: rgb(153, 0, 255);
 
-h1 {
+
+@layer app {
+  /* app-specific CSS */
+  h3 {
     color: $H1Color;
+  }
 }
