@@ -1,0 +1,4 @@
+{
+  "name": "Top",
+  "body": [{ "type": "script", "path": "indexx.js", "dev": "main.js" }]
+}

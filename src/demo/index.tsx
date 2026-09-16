@@ -31,7 +31,7 @@ window.addEventListener("load", function () {
   getJsonDbx("/tasks.json").then((res) => {
     duration = performance.now() - start;
     data = res;
-    const tasks = watch(data.tasks, () => {
+    const tasks = watch(data.tasks || [], () => {
       putJsonDbx("/tasks.json", data);
       root.update();
     });

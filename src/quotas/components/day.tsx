@@ -9,7 +9,7 @@ import type {
   TargetScheduling,
   UserTargets,
 } from "../types";
-import { pageLoader, PageController, PageWrapper } from "./page";
+import { PageWrapper } from "../../../lib/page-wrapper";
 import styles from "../styles/targets.module.css";
 import { Watcher } from "./watcher";
 

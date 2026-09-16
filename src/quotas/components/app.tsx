@@ -1,6 +1,7 @@
 import { Router, Uses, route } from "wallace";
 import { DayPage } from "./day";
 import { TargetsPage } from "./targets";
+import { TestPage } from "./test";
 import { getLastNDays, toWeekDay, navTo } from "../../../lib/utils";
 import styles from "../styles/app.module.css";
 
@@ -11,6 +12,7 @@ const routerProps = {
       component.dismount()
     ),
     route("/targets", TargetsPage),
+    route("/test", TestPage),
   ],
 };
 

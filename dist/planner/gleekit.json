@@ -1,0 +1,4 @@
+{
+  "name": "Planner",
+  "body": [{ "type": "script", "path": "index.js", "dev": "index.tsx" }]
+}

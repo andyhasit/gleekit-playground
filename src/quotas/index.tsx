@@ -4,8 +4,8 @@ import { gleekit } from "gleekit";
 
 gleekit.setAppMenu([
   {
-    link: "Settings",
-    html: "/settings",
+    link: "/settings",
+    html: "SS",
   },
 ]);
 mount("app", App);
