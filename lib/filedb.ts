@@ -72,7 +72,8 @@ class FileSet<Key, Shape> {
   }
 }
 
-class File<Shape> {
+// TODO: sort this mess, its' half JSON half not.
+export class File<Shape> {
   db: FileDb;
   path: string;
   parse: (raw: string) => Shape;
@@ -90,8 +91,9 @@ class File<Shape> {
     const raw = await getRawDbx(this.path);
     return raw.ok ? raw.json() : this.default();
   }
-  put(value: Shape) {
-    return this.db.put(this.path, value);
+  async put(value: Shape) {
+    return putJsonDbx(this.path, value);
+    // return this.db.put(this.path, value);
   }
 }
 

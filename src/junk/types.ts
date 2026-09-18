@@ -8,7 +8,7 @@ export interface Location {
 }
 
 // Difference is if it has sub field.
-export type Entry = Location & Item;
+export type Entry = Location | Item;
 
 export interface Data {
   root: [];
