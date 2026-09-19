@@ -1,17 +1,17 @@
-import { Mode } from "../hub";
-import type { HubOnly } from "../hub";
-import { AddItemForm } from "./add-item-form";
-import { ActionButtonRow } from "./action-buttons";
-import { LocationRow } from "./location-row";
+import { DetailFormView } from "./DetailForm";
+import { ActionButtonsView } from "./ActionButtons";
+import { EntryRow } from "./Entry";
+import { Mode, Hub } from "../hub";
+import type { Takes } from "wallace";
 
-export const Home: HubOnly = (_, { hub }) => (
+export const Home: Takes<Hub> = (hub) => (
   <div class="m-2" assign={hub.root}>
-    <ActionButtonRow model={null} />
+    <ActionButtonsView model={hub.actionButtomsModel} />
     <div if={hub.mode === Mode.Normal || hub.mode === Mode.Move}>
-      <LocationRow.repeat models={hub.rootEntries} />
+      <EntryRow.repeat models={hub.rootEntries} />
     </div>
     <div if={hub.mode === Mode.Add}>
-      <AddItemForm model={null} />
+      <DetailFormView model={hub.detailFormModel} />
     </div>
     <div if={hub.mode === Mode.Delete}>
       <button onClick={hub.confirmDelete()}>
@@ -20,11 +20,3 @@ export const Home: HubOnly = (_, { hub }) => (
     </div>
   </div>
 );
-
-// TODO: get rid once wallace's assign is fixed.
-Home.methods.render = function (model, hub) {
-  this.model = model;
-  this.hub = hub;
-  hub.root = this;
-  this.update();
-};
