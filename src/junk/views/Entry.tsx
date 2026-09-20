@@ -17,7 +17,7 @@ export const EntryRow: Takes<EntryModel> = (entry) => (
         bind-as:checkbox={entry.selected}
       />
       <div
-        if={entry.hub.mode === Mode.Move && entry.isFolder}
+        if={entry.hub.mode === Mode.Move && entry.canMoveSelectedHere()}
         onClick={entry.hub.confirmMove(entry)}
       >
         <i class="las la-chevron-left"></i>
@@ -30,6 +30,7 @@ export const EntryRow: Takes<EntryModel> = (entry) => (
 );
 
 export class EntryModel {
+  included = true;
   _expanded = false;
   _selected = false;
   _children: EntryModel[] = [];
@@ -47,21 +48,24 @@ export class EntryModel {
   }
   get children(): EntryModel[] {
     const folders = [],
-      items = [];
-    this._children.forEach((entry) =>
-      (entry.isFolder ? folders : items).push(entry)
-    );
+      items = [],
+      filter = this.hub.filter;
+    this._children.forEach((entry) => {
+      // if (filter && !entry.name.includes(filter)) return;
+      if (filter && !entry.included) return;
+      (entry.isFolder ? folders : items).push(entry);
+    });
     return [...sortByName(folders), ...sortByName(items)];
   }
   get expanded() {
-    return this._expanded;
+    return this.hub.filter || this._expanded;
   }
   get selected() {
     return this._selected;
   }
   set selected(value: boolean) {
     this._selected = value;
-    this.hub.root.update();
+    this.hub.update();
   }
   get hasChildren() {
     return this._children.length > 0;
@@ -69,7 +73,7 @@ export class EntryModel {
   toggle() {
     if (this.isFolder) {
       this._expanded = !this._expanded;
-      this.hub.root.update();
+      this.hub.update();
     }
   }
   get isFolder() {
@@ -83,5 +87,21 @@ export class EntryModel {
       return "las la-circle";
     }
     return "las la-hand-point-right";
+  }
+  isParentOf(other: EntryModel) {
+    while (other) {
+      if (other === this) {
+        return true;
+      } else {
+        other = other.parent;
+      }
+    }
+    return false;
+  }
+  canMoveSelectedHere() {
+    return (
+      this.isFolder &&
+      this.hub.selectedEntries.every((entry) => !entry.isParentOf(this))
+    );
   }
 }

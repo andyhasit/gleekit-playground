@@ -47,7 +47,9 @@ export class ActionButtonsModel {
         {
           text: "Add",
           icon: "plus-circle",
-          enabled: selected === 1 && this.hub.selectedEntries[0].isFolder,
+          enabled:
+            selected === 0 ||
+            (selected === 1 && this.hub.selectedEntry.isFolder),
           click: () => this.hub.startAddAction(),
         },
         {
@@ -63,7 +65,7 @@ export class ActionButtonsModel {
         text: "Cancel",
         icon: "times-circle",
         enabled: selected >= 1,
-        click: () => this.hub.cancelAction(),
+        click: () => this.hub._cancelAction(),
       },
     ];
   }
@@ -73,9 +75,8 @@ export const ActionButtonsView: Takes<ActionButtonsModel> = ({
   hub,
   getButtons,
 }) => (
-  <div class="border-b pb-1 h-12 flex justify-between">
-    <div class="w-4/12 pt-2">{hub.selectedEntries.length} selected</div>
-    <div class="w-8/12 flex justify-end gap-2">
+  <div class="border-b pb-1 h-12">
+    <div class="flex justify-end gap-2">
       <ActionButton.repeat models={getButtons()} />
     </div>
   </div>

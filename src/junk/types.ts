@@ -1,15 +1,8 @@
-export interface Item {
+export interface Entry {
   name: string;
+  sub?: Entry[]; // if present, it is a folder.
 }
-
-export interface Location {
-  name: string;
-  sub: Entry[];
-}
-
-// Difference is if it has sub field.
-export type Entry = Location | Item;
 
 export interface Data {
-  root: [];
+  sub: Entry[];
 }
